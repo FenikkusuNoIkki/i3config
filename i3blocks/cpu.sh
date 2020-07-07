@@ -20,4 +20,10 @@ echo "$cpu_usage%"
 # Second echo updates the short_text i3bar key
 echo "$cpu_usage%" 
 # Third echo updates the color i3bar key
-echo "#b16286" 
+if [ $cpu_usage -gt 50 ] && [ $cpu_usage -lt 80 ]
+then
+    echo "#af3a03" 
+elif [ $cpu_usage -gt 80 ] 
+then
+    echo "#9d0006" 
+fi
