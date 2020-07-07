@@ -1,16 +1,16 @@
 #!/bin/bash
 vol=$(amixer get Master | awk '/Mono.+/ {print $6=="[off]"?$6:$4}' | tr -d '[]%')
-if [ $vol = "off" ]
+# First echo updates the full_text i3bar key
+echo "$vol"
+# Second echo updates the short_text i3bar key
+echo "$vol"
+# Third echo updates the color i3bar key
+if [ $vol -gt 80 ] && [ $vol -lt 90 ]
 then
-    echo "婢"
-elif [ $vol -lt 40 ]
+    echo "#af3a03" 
+elif [ $vol -gt 90 ]
 then
-    echo "奄 $vol"
-elif [ $vol -ge 40 ] && [ $vol -lt 70 ]
-then
-    echo "奔 $vol"
-else
-    echo "墳 $vol"
+    echo "#9d0006" 
 fi
 
 

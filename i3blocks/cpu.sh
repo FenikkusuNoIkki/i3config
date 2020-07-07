@@ -1,5 +1,4 @@
 #!/bin/bash 
-
 # Get the first line with aggregate of all CPUs 
 cpu_now=($(head -n1 /proc/stat)) 
 # Get all columns but skip the first (which is the "cpu" string) 
