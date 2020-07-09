@@ -190,11 +190,10 @@ set $darkgray #1d2021
 set $lightgray #b1b3b4
 
 # font used by i3 for titles and bars
-font pango:Hack Nerd Font, FontAwesome 9
+font pango:Hack Nerd Font 10
 
 #start of bar section
 bar {
-    font pango:Hack Nerd Font, FontAwesome 9
     position top
     status_command i3blocks -c ~/.config/i3/i3blocks_top.conf
     colors {
@@ -212,7 +211,6 @@ bar {
     }
 }
 bar {
-    font pango:Hack Nerd Font, FontAwesome 9
     position bottom
     workspace_buttons no
     status_command i3blocks -c ~/.config/i3/i3blocks_bottom.conf
