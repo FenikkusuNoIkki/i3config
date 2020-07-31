@@ -24,5 +24,5 @@ then
     echo "#af3a03" 
 elif [ $cpu_usage -gt 80 ] 
 then
-    echo "#9d0006" 
+    echo "#b57614" 
 fi
