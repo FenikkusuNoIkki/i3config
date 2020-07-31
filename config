@@ -144,7 +144,7 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcu
 # Pulse Audio controls
 bindsym XF86AudioRaiseVolume exec --no-startup-id amixer set Master "5%+" && pkill -RTMIN+2 i3blocks #increase sound volume
 bindsym XF86AudioLowerVolume exec --no-startup-id amixer set Master "5%-" && pkill -RTMIN+2 i3blocks #decrease sound volume
-bindsym XF86AudioMute exec --no-startup-id amixer -D pulse set Master toggle && pkill -RTMIN+2 i3blocks # mute sound
+bindsym XF86AudioMute exec --no-startup-id amixer -q -D pulse sset Master toggle && pkill -RTMIN+2 i3blocks # mute sound
 
 # Sreen brightness controls
 bindsym XF86MonBrightnessUp exec xbacklight -inc 20 # increase screen brightness
@@ -199,7 +199,7 @@ bar {
         # bar background color
         background $bg
         # text color used for blocks that do not have a color specified.
-	statusline $lightgray
+	statusline $gray
 
         # workspaces section            
         #                    border  backgr. text
@@ -217,7 +217,7 @@ bar {
         # bar background color
         background $bg
         # text color used for blocks that do not have a color specified.
-	statusline $lightgray
+	statusline $gray
     }
 }
 

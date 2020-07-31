@@ -1,16 +1,8 @@
 #!/bin/bash
 vol=$(amixer get Master | awk '/Mono.+/ {print $6=="[off]"?$6:$4}' | tr -d '[]%')
+if [ -z "$vol" ]
+then
+    vol=$(amixer get Master | awk '/Left/ {print $6=="[off]"?$6:$5}' | tr -d '[]%')
+fi
 # First echo updates the full_text i3bar key
 echo "$vol"
-# Second echo updates the short_text i3bar key
-echo "$vol"
-# Third echo updates the color i3bar key
-if [ $vol -gt 80 ] && [ $vol -lt 90 ]
-then
-    echo "#af3a03" 
-elif [ $vol -gt 90 ]
-then
-    echo "#9d0006" 
-fi
-
-
