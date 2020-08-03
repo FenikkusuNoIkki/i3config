@@ -38,7 +38,7 @@ bindsym $mod+Return exec termite
 # kill focused window
 bindsym $mod+Shift+q kill
 
-bindsym $mod+Ctrl+l exec i3lock -t -i ~/Pictures/firewatch.png
+bindsym $mod+Ctrl+l exec i3lock -t -i ~/Pictures/star_wars.png
 
 # start rofi (a program launcher)
 bindsym $mod+d exec rofi -lines 12 -padding 18 -width 30 -location 0 -show drun -sidebar-mode -columns 1 -font 'Hack Nerd Font 10'
@@ -230,5 +230,5 @@ client.focused_inactive #af3a03 #212121 #d9d9d9 #0d1010 #af3a03
 client.unfocused        #af3a03 #212121 #d9d9d9 #424242 #af3a03
 client.focused          #d9d9d9 #cecece #000000 #d9d9d9 #d9d9d9
 
-exec --no-startup-id /usr/bin/feh --bg-fill ~/Pictures/firewatch.png
+exec --no-startup-id /usr/bin/feh --bg-fill ~/Pictures/star_wars.png
 exec --no-startup-id unclutter --timeout 3 &
