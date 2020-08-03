@@ -147,8 +147,8 @@ bindsym XF86AudioLowerVolume exec --no-startup-id amixer set Master "5%-" && pki
 bindsym XF86AudioMute exec --no-startup-id amixer -q -D pulse sset Master toggle && pkill -RTMIN+2 i3blocks # mute sound
 
 # Sreen brightness controls
-bindsym XF86MonBrightnessUp exec xbacklight -inc 20 # increase screen brightness
-bindsym XF86MonBrightnessDown exec xbacklight -dec 20 # decrease screen brightness
+bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 10 && pkill -RTMIN+3 i3blocks # increase screen brightness
+bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 10 && pkill -RTMIN+3 i3blocks # decrease screen brightness
 
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
