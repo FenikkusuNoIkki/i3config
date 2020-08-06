@@ -156,6 +156,9 @@ bindsym --release Caps_Lock exec pkill -SIGRTMIN+4 i3blocks
 # Change layout
 bindsym $mod+Ctrl+k exec ~/.config/i3/change_layout.sh && pkill -SIGRTMIN+5 i3blocks
 
+# Change layout
+bindsym $mod+Ctrl+m exec ~/.config/i3/switch_mode.sh && pkill -SIGRTMIN+6 i3blocks
+
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
 
