@@ -107,28 +107,28 @@ set $ws9 "09 "
 set $wsX "10 "
 
 # switch to workspace
-bindsym $mod+ampersand workspace $ws1
-bindsym $mod+eacute workspace $ws2
-bindsym $mod+quotedbl workspace $ws3
-bindsym $mod+apostrophe workspace $ws4
-bindsym $mod+parenleft workspace $ws5
-bindsym $mod+minus workspace $ws6
-bindsym $mod+egrave workspace $ws7
-bindsym $mod+underscore workspace $ws8
-bindsym $mod+ccedilla workspace $ws9
-bindsym $mod+agrave workspace $wsX
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
+bindsym $mod+0 workspace $wsX
 
 # move focused container to workspace
-bindsym $mod+Shift+ampersand move container to workspace $ws1
-bindsym $mod+Shift+eacute move container to workspace $ws2
-bindsym $mod+Shift+quotedbl move container to workspace $ws3
-bindsym $mod+Shift+apostrophe move container to workspace $ws4
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
 bindsym $mod+Shift+5 move container to workspace $ws5
-bindsym $mod+Shift+minus move container to workspace $ws6
-bindsym $mod+Shift+egrave move container to workspace $ws7
-bindsym $mod+Shift+underscore move container to workspace $ws8
-bindsym $mod+Shift+ccedilla move container to workspace $ws9
-bindsym $mod+Shift+agrave move container to workspace $wsX
+bindsym $mod+Shift+6 move container to workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9
+bindsym $mod+Shift+0 move container to workspace $wsX
 
 # move workscpaces to a different screen
 bindsym $mod+w move workspace to output left
