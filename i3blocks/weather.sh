@@ -1,5 +1,5 @@
 #!/bin/bash
-weather=$(curl -s wttr.in/"$(curl --silent ipinfo.io/loc)"\?format\=1)
+weather=$(curl -s wttr.in/"$(curl --silent ipinfo.io/loc)"\?format\=%t)
 if [[ $weather == *"Unknown"* ]]
 then
     # First echo updates the full_text i3bar key
