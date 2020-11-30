@@ -1,6 +1,6 @@
 #!/bin/bash
-ifname=$(ip link | awk -F: '$0 !~ "lo|vir|wl|^[^0-9]"{print $2;getline}')
-if [ -z "$ifname" ]
+ifnames=$(ip link | awk -F: '$0 !~ "vir|wl|^[^0-9]"{print $2}')
+if [ -z "$ifnames" ]
 then
     # First echo updates the full_text i3bar key
     echo "No ethernet interface found"
@@ -10,8 +10,23 @@ then
     echo "#af3a03"
     exit 1
 fi
-ip=$(ip addr show $ifname | awk '$1 ~ /^inet$/ {printf "%s\n", $2}' | sed 's/\/.*//')
-if [ -z "$ip" ]
+while IFS= read -r ifname; do
+	ip=$(ip addr show $ifname | awk '$1 ~ /^inet$/ {printf "%s\n", $2}' | sed 's/\/.*//' | awk '$1 !~ /127.0.0.1$/ {printf "%s\n", $1}')
+	if [ ! -z $ip ]
+	then
+		if [ $ifname == "lo" ] || [[ $ifname == *"lo"* ]]
+		then
+    		lo_ip="$ip"
+		elif [[ $ifname == *"tun"* ]]
+		then
+    		tun_ip="$ip"
+		else
+			eth_ip="$ip"
+		fi
+	fi
+done <<< "$ifnames"
+
+if [ -z "$eth_ip" ]
 then
     # First echo updates the full_text i3bar key
     echo "-"
@@ -41,4 +56,9 @@ then
     echo "#b57614"
     exit 1
 fi
-echo "$ip"
+if [ ! -z $lo_ip ] && [ ! -z $tun_ip ]
+then
+	echo "$eth_ip [lo:$lo_ip / tun:$tun_ip]"
+else
+	echo "$eth_ip"
+fi

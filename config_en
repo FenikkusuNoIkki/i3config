@@ -240,4 +240,4 @@ client.unfocused        #af3a03 #212121 #d9d9d9 #424242 #af3a03
 client.focused          #d9d9d9 #cecece #000000 #d9d9d9 #d9d9d9
 
 exec --no-startup-id /usr/bin/feh --bg-fill ~/Pictures/star_wars.png
-exec --no-startup-id unclutter --timeout 3 &
+exec --no-startup-id dunst

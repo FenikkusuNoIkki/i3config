@@ -1,6 +1,6 @@
 #!/bin/bash
-ifname=$(ip link | awk -F: '$0 !~ "lo|vir|enp|^[^0-9]"{print $2;getline}')
-if [ -z "$ifname" ]
+ifnames=$(ip link | awk -F: '$0 !~ "vir|enp|^[^0-9]"{print $2}')
+if [ -z "$ifnames" ]
 then
     # First echo updates the full_text i3bar key
     echo "No wifi interface found"
@@ -10,8 +10,24 @@ then
     echo "#af3a03"
     exit 1
 fi
-ip=$(ip addr show $ifname | awk '$1 ~ /^inet$/ {printf "%s\n", $2}' | sed 's/\/.*//')
-if [ -z "$ip" ]
+while IFS= read -r ifname; do
+	ip=$(ip addr show $ifname | awk '$1 ~ /^inet$/ {printf "%s\n", $2}' | sed 's/\/.*//' | awk '$1 !~ /127.0.0.1$/ {printf "%s\n", $1}')
+	if [ ! -z $ip ]
+	then
+		if [ $ifname == "lo" ] || [[ $ifname == *"lo"* ]]
+		then
+    		lo_ip="$ip"
+		elif [[ $ifname == *"tun"* ]]
+		then
+    		tun_ip="$ip"
+		else
+			wifi_ip="$ip"
+		fi
+	fi
+done <<< "$ifnames"
+
+#ip=$(ip addr show $ifname | awk '$1 ~ /^inet$/ {printf "%s\n", $2}' | sed 's/\/.*//')
+if [ -z "$wifi_ip" ]
 then
     # First echo updates the full_text i3bar key
     echo "-"
@@ -42,4 +58,9 @@ then
     exit 1
 fi
 ssid=$(nmcli -t -f active,ssid dev wifi | awk '/yes/ {print $1}' | awk -F ':' '{print $2}')
-echo "$ssid - $ip"
+if [ ! -z $lo_ip ] && [ ! -z $tun_ip ]
+then
+	echo "$ssid - $wifi_ip [lo:$lo_ip / tun:$tun_ip]"
+else
+	echo "$ssid - $wifi_ip"
+fi
