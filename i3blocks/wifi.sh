@@ -1,5 +1,5 @@
 #!/bin/bash
-ifnames=$(ip link | awk -F: '$0 !~ "vir|enp|^[^0-9]"{print $2}')
+ifnames=$(ip link | awk -F: '$0 !~ "vir|enp|eno|^[^0-9]"{print $2}')
 if [ -z "$ifnames" ]
 then
     # First echo updates the full_text i3bar key
