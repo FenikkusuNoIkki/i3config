@@ -22,6 +22,15 @@ change_sinks () {
 	if [ $((nb_inputs_sink)) == 0 ]; then
 		exit 1
 	fi
+
+	declare -A available_sinks_list
+	# Function to get all the sinks available
+	get_available_sinks_list available_sinks_list
+	# If no sink or only one there's nothing to do
+	if [ ${#available_sinks_list[@]} < 2 ]; then
+		exit 1
+	fi
+
 	# Get the applications list to display in the rofi menu
 	# Register the application with its sink index
 	for (( x=1; x <= "$((nb_inputs_sink))"; x++ )); do
@@ -34,22 +43,30 @@ change_sinks () {
 			rofi_selection+="\n"
 		fi
 	done
-	# Display the rofi menu with the applications
-	chosen="$(echo -e "$rofi_selection" | rofi -dmenu -p "[Changing audio sink] Select the application" -lines ${#application_list[@]})"
-	# If cancel (escape key) nothing to do
-	if [ -z "$chosen" ]; then
-		exit 1
+
+	# Display the rofi menu with the applications / If only one app no need to display the menu selection
+	if [ $((nb_inputs_sink)) != 1 ]; then
+		chosen_app="$(echo -e "$rofi_selection" | rofi -dmenu -p "[Changing audio sink] Select the application" -lines ${#application_list[@]})"
+		# If cancel (escape key) nothing to do
+		if [ -z "$chosen_app" ]; then
+			exit 1
+		fi
 	fi
+
 	# Register the index for the chosen application
 	for key in "${!application_list[@]}"; do
-		if [ "${application_list[$key]}" == "$chosen" ]; then
+		# If only one app save the informations on the first occurence and exit the loop
+		if [ $((nb_inputs_sink)) == 1 ]; then
+			index_to_change="$key"
+			chosen_app=${application_list[$key]}
+			break
+		fi
+		if [ "${application_list[$key]}" == "$chosen_app" ]; then
 			echo "${application_list[$key]} - $key"
 			index_to_change="$key"
 		fi
 	done
-	declare -A available_sinks_list
-	# Function to get all the sinks available
-	get_available_sinks_list available_sinks_list
+
 	for index in "${!available_sinks_list[@]}"; do
 		echo "$index - ${available_sinks_list[$index]}"
 		rofi_sinks_list+="${available_sinks_list[$index]}"
@@ -58,19 +75,22 @@ change_sinks () {
 			rofi_sinks_list+="\n"
 		fi
 	done
+
 	# Display the rofi menu with all the sinks available
-	chosen="$(echo -e "$rofi_sinks_list" | rofi -dmenu -p "[Changing audio sink] Select the source" -lines ${#available_sinks_list[@]})"
+	chosen_sink="$(echo -e "$rofi_sinks_list" | rofi -dmenu -p "[Changing audio sink] Select the source for $chosen_app" -lines ${#available_sinks_list[@]})"
 	# If cancel (escape key) nothing to do
-	if [ -z "$chosen" ]; then
+	if [ -z "$chosen_sink" ]; then
 		exit 1
 	fi
+
 	# Register the index for the chosen sink
 	for key in "${!available_sinks_list[@]}"; do
-		if [ "${available_sinks_list[$key]}" == "$chosen" ]; then
+		if [ "${available_sinks_list[$key]}" == "$chosen_sink" ]; then
 			echo "${available_sinks_list[$key]} - $key"
 			new_index="$key"
 		fi
 	done
+
 	# Move the chosen application to the chosen sink
 	pacmd move-sink-input "$index_to_change" "$new_index"
 }
@@ -83,6 +103,7 @@ display_sinks () {
 	pacmd_list_sinks=$(pacmd list-sinks)
 	pacmd_list_sink_inputs=$(pacmd list-sink-inputs)
 	nb_inputs_sink=$(echo "$pacmd_list_sink_inputs" | head -n1 | awk '{print $1;}')
+
 	if [ "$nb_inputs_sink" == 0 ] || [ -z "$nb_inputs_sink" ]; then
 		# First echo updates the full_text i3bar key
 		echo "No input(s) sink available"
@@ -99,6 +120,7 @@ display_sinks () {
 			# Associative array : register several values for a given key
 			sink_vol_app[$sink_and_vol]="${sink_vol_app[$sink_and_vol]}${sink_vol_app[$sink_and_vol]:+/}$application"
 		done
+
 		count=1
 		# Format the output : '-' between the app(s) and the sink and a '|' between the app(s) from different sinks
 		for key in "${!sink_vol_app[@]}"; do
