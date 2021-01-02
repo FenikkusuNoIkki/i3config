@@ -8,4 +8,3 @@ else
     setxkbmap fr-latin9
     ln -sf ~/.config/i3/config_fr ~/.config/i3/config
 fi
-i3-msg reload
