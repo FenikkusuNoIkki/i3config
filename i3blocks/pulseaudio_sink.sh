@@ -60,7 +60,7 @@ increase_decrease_volume_sink () {
 	for key in "${!sink_index[@]}"; do
 		# If only one app save the informations on the first occurence and exit the loop
 		if [ ${#sink_index[@]} == 1 ]; then
-			index_to_change="$key"
+			index_to_change="${sink_index[$key]}"
 			current_volume=$(echo "$pacmd_list_sinks" | sed -e "1,/index: ${sink_index[$key]}/ d" | awk '/volume:/{print $5; exit}' | sed 's/"//g' | sed 's/%//g')
 			break
 		fi
@@ -93,7 +93,7 @@ change_sinks () {
 	# Function to get all the sinks available
 	get_available_sinks_list available_sinks_list
 	# If no sink or only one there's nothing to do
-	if [ ${#available_sinks_list[@]} < 2 ]; then
+	if [ "${#available_sinks_list[@]}" -lt "2" ]; then
 		exit 1
 	fi
 
