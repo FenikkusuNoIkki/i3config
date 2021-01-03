@@ -142,9 +142,9 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # Pulse Audio controls
-bindsym XF86AudioRaiseVolume exec --no-startup-id amixer set Master "5%+" && pkill -RTMIN+2 i3blocks #increase sound volume
-bindsym XF86AudioLowerVolume exec --no-startup-id amixer set Master "5%-" && pkill -RTMIN+2 i3blocks #decrease sound volume
-bindsym XF86AudioMute exec --no-startup-id amixer -q -D pulse sset Master toggle && pkill -RTMIN+2 i3blocks # mute sound
+bindsym $mod+Ctrl+s exec ~/.config/i3/i3blocks/pulseaudio_sink.sh -s
+bindsym $mod+Ctrl+Up exec ~/.config/i3/i3blocks/pulseaudio_sink.sh -i
+bindsym $mod+Ctrl+Down exec ~/.config/i3/i3blocks/pulseaudio_sink.sh -d
 
 # Sreen brightness controls
 bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 10 && pkill -RTMIN+3 i3blocks # increase screen brightness
