@@ -102,10 +102,11 @@ change_sinks () {
 	for (( x=1; x <= "$((nb_inputs_sink))"; x++ )); do
 		sink_index=$(echo "$pacmd_list_sink_inputs" | awk '/index:/{i++} i=='$x'{for (x=1; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/*//g' | awk '{print $2}')
 		application=$(echo "$pacmd_list_sink_inputs" | awk '/application.name =/{i++} i=='$x'{for (x=3; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/"//g' | sed 's/.$//')
+		echo "$application"
 		application_list[$sink_index]="$application"
 		rofi_selection+="${application_list[$sink_index]}"
 		# If still have applications put a new line for the next entry
-		if [ $x != $((nb_inputs_sink)) ]; then
+		if [ $x != "$((nb_inputs_sink))" ]; then
 			rofi_selection+="\n"
 		fi
 	done
@@ -134,13 +135,15 @@ change_sinks () {
 		fi
 	done
 
+	count=1
 	for index in "${!available_sinks_list[@]}"; do
 		echo "$index - ${available_sinks_list[$index]}"
 		rofi_sinks_list+="${available_sinks_list[$index]}"
 		# If still have sinks put a new line for the next entry
-		if [ $index != ${#available_sinks_list[@]} ]; then
+		if [ $count != ${#available_sinks_list[@]} ]; then
 			rofi_sinks_list+="\n"
 		fi
+		((count++))
 	done
 
 	# Display the rofi menu with all the sinks available
