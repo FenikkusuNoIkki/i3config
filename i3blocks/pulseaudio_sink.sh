@@ -70,12 +70,12 @@ increase_decrease_volume_sink () {
 			break
 		fi
 	done
-	echo "$index_to_change - $current_volume"
 	if [ "$1" == "inc" ]; then
 		new_vol_level=$(((current_volume + 10)*65536/100))
 	elif [ "$1" == "dec" ]; then
 		new_vol_level=$(((current_volume - 10)*65536/100))
 	fi
+	echo "$index_to_change - $current_volume"
 	pacmd set-sink-volume "$index_to_change" "$new_vol_level"
 }
 
@@ -102,8 +102,10 @@ change_sinks () {
 	for (( x=1; x <= "$((nb_inputs_sink))"; x++ )); do
 		sink_index=$(echo "$pacmd_list_sink_inputs" | awk '/index:/{i++} i=='$x'{for (x=1; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/*//g' | awk '{print $2}')
 		application=$(echo "$pacmd_list_sink_inputs" | awk '/application.name =/{i++} i=='$x'{for (x=3; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/"//g' | sed 's/.$//')
-		echo "$application"
+		sink_number=$(echo "$pacmd_list_sink_inputs" | awk '/sink:/{i++} i=='$x'{print $2; exit}')
+		echo "$application - $sink_index - $sink_number"
 		application_list[$sink_index]="$application"
+		application_list_sink_nb[$sink_number]="$application"
 		rofi_selection+="${application_list[$sink_index]}"
 		# If still have applications put a new line for the next entry
 		if [ $x != "$((nb_inputs_sink))" ]; then
@@ -135,6 +137,14 @@ change_sinks () {
 		fi
 	done
 
+	# Get the sink number for the chosen application. Used for highlighting the current sink for the chosen application in the rofi menu
+	for key in "${!application_list_sink_nb[@]}"; do
+		if [ "${application_list_sink_nb[$key]}" == "$chosen_app" ]; then
+			sink_number="$key"
+			break
+		fi
+	done
+
 	count=1
 	for index in "${!available_sinks_list[@]}"; do
 		echo "$index - ${available_sinks_list[$index]}"
@@ -143,11 +153,15 @@ change_sinks () {
 		if [ $count != ${#available_sinks_list[@]} ]; then
 			rofi_sinks_list+="\n"
 		fi
+		# Get the index for of available_sinks_list array for the source of the chosen app
+		if [ "$sink_number" == "$index" ]; then
+			current_sink=$(($count-1))
+		fi
 		((count++))
 	done
 
 	# Display the rofi menu with all the sinks available
-	chosen_sink="$(echo -e "$rofi_sinks_list" | rofi -dmenu -p "[Changing audio sink] Select the source for $chosen_app" -lines ${#available_sinks_list[@]})"
+	chosen_sink="$(echo -e "$rofi_sinks_list" | rofi -dmenu -p "[Changing audio sink] Select the sink for $chosen_app" -lines ${#available_sinks_list[@]} -a $current_sink )"
 	# If cancel (escape key) nothing to do
 	if [ -z "$chosen_sink" ]; then
 		exit 1
