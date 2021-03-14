@@ -196,9 +196,26 @@ display_sinks () {
 		echo "No input(s) sink available"
 	else
 		declare -A sink_vol_app
+
+		# Split each list index into an array
+		delimiter="index"
+		string=$pacmd_list_sink_inputs$delimiter
+		sink_array=()
+		while [[ $string ]]; do
+			sink_array+=( "${string%%"$delimiter"*}" )
+			string=${string#*"$delimiter"}
+		done
+
 		for (( x=1; x <= "$((nb_inputs_sink))"; x++ )); do
-			sink=$(echo "$pacmd_list_sink_inputs" | awk '/sink:/{i++} i=='$x'{print $2; exit}')
-			application=$(echo "$pacmd_list_sink_inputs" | awk '/application.name =/{i++} i=='$x'{for (x=3; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/"//g' | sed 's/.$//')
+			sink=$(echo "${sink_array[$x]}" | awk '/sink:/{print $2; exit}')
+			application=$(echo "${sink_array[$x]}" | awk '/application.name =/{for (x=3; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/"//g' | sed 's/.$//')
+			# Handle the case if a device is connected to the line in. pacmd 
+			if [ -z "$application" ]; then
+				application=$(echo "${sink_array[$x]}" | awk '/media.name =/{for (x=3; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/"//g' | sed 's/.$//')
+				if [[ "$application" == *"Loopback"* ]]; then
+					application="Nintendo Switch"
+				fi
+			fi
 			sink_description=$(echo "$pacmd_list_sinks" | sed -e "1,/index: $(($sink))/ d" | awk '/device.description =/{for (x=3; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/"//g' | sed 's/.$//')
 			volume=$(echo "$pacmd_list_sinks" | sed -e "1,/index: $(($sink))/ d" | awk '/volume:/{print $5; exit}' | sed 's/"//g')
 			sink_and_vol="$sink_description [$volume]"
