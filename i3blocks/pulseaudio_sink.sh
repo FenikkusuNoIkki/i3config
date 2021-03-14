@@ -97,12 +97,29 @@ change_sinks () {
 		exit 1
 	fi
 
+	# Split each list index into an array
+	delimiter="index"
+	string=$pacmd_list_sink_inputs$delimiter
+	sink_array=()
+	while [[ $string ]]; do
+		sink_array+=( "${string%%"$delimiter"*}" )
+		string=${string#*"$delimiter"}
+	done
+
 	# Get the applications list to display in the rofi menu
 	# Register the application with its sink index
 	for (( x=1; x <= "$((nb_inputs_sink))"; x++ )); do
-		sink_index=$(echo "$pacmd_list_sink_inputs" | awk '/index:/{i++} i=='$x'{for (x=1; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/*//g' | awk '{print $2}')
-		application=$(echo "$pacmd_list_sink_inputs" | awk '/application.name =/{i++} i=='$x'{for (x=3; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/"//g' | sed 's/.$//')
-		sink_number=$(echo "$pacmd_list_sink_inputs" | awk '/sink:/{i++} i=='$x'{print $2; exit}')
+		# The delimiter exclude the index word (index: 1) so we just need to look for the first ':' to get it
+		sink_index=$(echo "${sink_array[$x]}" | awk '/:/{for (x=1; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/*//g' | awk '{print $2}')
+		application=$(echo "${sink_array[$x]}" | awk '/application.name =/{for (x=3; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/"//g' | sed 's/.$//')
+		# Handle the case if a device is connected to the line in.
+		if [ -z "$application" ]; then
+			application=$(echo "${sink_array[$x]}" | awk '/media.name =/{for (x=3; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/"//g' | sed 's/.$//')
+			if [[ "$application" == *"Loopback"* ]]; then
+				application="Nintendo Switch"
+			fi
+		fi
+		sink_number=$(echo "${sink_array[$x]}" | awk '/sink:/{print $2; exit}')
 		echo "$application - $sink_index - $sink_number"
 		application_list[$sink_index]="$application"
 		application_list_sink_nb[$sink_number]="$application"
@@ -115,6 +132,7 @@ change_sinks () {
 
 	# Display the rofi menu with the applications / If only one app no need to display the menu selection
 	if [ $((nb_inputs_sink)) != 1 ]; then
+		echo "${#application_list[@]}"
 		chosen_app="$(echo -e "$rofi_selection" | rofi -dmenu -p "[Changing audio sink] Select the application" -lines ${#application_list[@]})"
 		# If cancel (escape key) nothing to do
 		if [ -z "$chosen_app" ]; then
@@ -209,7 +227,7 @@ display_sinks () {
 		for (( x=1; x <= "$((nb_inputs_sink))"; x++ )); do
 			sink=$(echo "${sink_array[$x]}" | awk '/sink:/{print $2; exit}')
 			application=$(echo "${sink_array[$x]}" | awk '/application.name =/{for (x=3; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/"//g' | sed 's/.$//')
-			# Handle the case if a device is connected to the line in. pacmd 
+			# Handle the case if a device is connected to the line in.
 			if [ -z "$application" ]; then
 				application=$(echo "${sink_array[$x]}" | awk '/media.name =/{for (x=3; x<=NF; x++) printf("%s ",$x); exit}' | sed 's/"//g' | sed 's/.$//')
 				if [[ "$application" == *"Loopback"* ]]; then
